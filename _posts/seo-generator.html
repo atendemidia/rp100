@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Gerador de Posts — Manuais Amazon (SEO Perfeito)</title>
+<style>
+  :root{--bg:#fff;--muted:#666;--accent:#111}
+  body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;max-width:980px;margin:40px auto;padding:20px;color:var(--accent);background:var(--bg)}
+  h1{font-size:22px;margin-bottom:8px}
+  p.hint{color:var(--muted);font-size:14px;margin-top:0}
+  .actions{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0}
+  button.primary{background:#111;color:#fff;border:none;padding:14px 28px;border-radius:8px;cursor:pointer;font-weight:600;font-size:16px}
+  button.ghost{background:#f8f8f8;border:1px solid #ddd;color:#111;padding:14px 28px;border-radius:8px;cursor:pointer}
+  pre#preview{background:#f8fafc;padding:20px;border-radius:10px;margin-top:20px;white-space:pre-wrap;font-size:14px;line-height:1.6}
+  .small{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<h1>Gerador de Posts — Manuais de Marketing Amazon</h1>
+<p class="hint">1 post por dia com mini-tutorial + bloco SEO gigante + botão Amazon. Tudo otimizado e seguro.</p>
+
+<div class="actions">
+  <button id="generateOne" class="primary">Gerar 1 Post (hoje)</button>
+  <button id="generateAll" class="primary">Gerar 365 Posts (.zip)</button>
+  <button id="previewBtn" class="ghost">Pré-visualizar</button>
+  <button id="resetDate" class="ghost">Resetar contador</button>
+</div>
+
+<div class="small">
+  Próximo post automático: <strong id="nextDate"></strong>
+</div>
+
+<pre id="preview"></pre>
+
+<script>
+// ==================== TODOS OS LIVROS COM BLOCO SEO PRONTO ====================
+const BOOKS = [
+  {nicho:"Restaurante", livro:"Manual do Marketing Para Restaurantes", url:"https://www.amazon.com.br/Manual-Marketing-Para-Restaurantes-Divulgar-ebook/dp/B0CJVS4MDK",
+   descCompleta:"Manual do Marketing Para Restaurantes - Como Divulgar Seu Bar e Restaurante na Internet, de forma clara e objetiva abordamos temas do mais básico até um pouco mais avançado, começando pela Introdução ao Digital, Conceito das Redes Sociais, Principais Mídias Sociais e Canais de divulgação Para Restaurantes, Análise de Concorrência Para Restaurantes, O que seu concorrente tem que te falta, Como alcançar o público da concorrência Para Restaurantes, Termos de Pesquisa Para Restaurantes, O que os seus clientes buscam na internet, Como aparecer nas buscas do Google, Tráfego de Influência, Alcance mais audiência com influenciadores do ramo, Tráfego Pago Para Restaurantes, Publicidade no Google ADS / YouTube, Publicidade no Meta (Instagram e Facebook), Estratégias de Conteúdo, Cronograma de Postagens Para Restaurantes, Quantas vezes postar na semana, Horários de postagens, Como programar postagens para datas e horários, Algoritmos e Engajamento, Use Palavras-Chave Relevantes Para Restaurantes, Marketplace, Como vender na internet, Usando o Catálogo do WhatsApp para Restaurantes, Como criar um site Para Restaurantes, Como registrar um domínio passo a passo, Atendimento Automatizado Para Restaurantes, Automatize o seu atendimento com ChatBot, Criando um Cartão Virtual Para Restaurantes, Como criar link para seu WhatsApp, Como configurar resposta automática personalizada, Bônus: dominando a Inteligência Artificial, Usando Chat GPT para Restaurantes, 10 comandos para o Chat GPT trabalhar para você, Usando Chat GPT para se atualizar sobre concorrência e tendências, e um Checklist do Marketing de Alta Performance para você colocar em prática tudo que aprendeu durante a leitura. Vamos embarcar nessa? Vem comigo! Manual do Marketing Para Restaurantes, Como Divulgar Seu Bar e Restaurante na Internet, Restaurante, Bares, Boteco, Lanchonete, Delivery",
+   sobre:"**Sobre o Manual do Marketing Para Restaurantes (disponível na Amazon)**\n\nO livro “Manual do Marketing Para Restaurantes – Como Divulgar Seu Bar e Restaurante na Internet”, é o guia mais completo do Brasil para quem quer atrair mais clientes pelo Google, Instagram, WhatsApp e delivery.\n\nSão mais de 80 páginas com estratégias comprovadas para:\n• aparecer no Google quando alguém busca “restaurante perto de mim”, “melhor pizzaria em Salvador” ou “delivery de comida japonesa”\n• criar link do WhatsApp que vai direto pro cardápio\n• configurar tráfego pago no Instagram e Google com R$ 10 por dia\n• usar o catálogo do WhatsApp para delivery e reservas\n• programar posts com o cronograma perfeito de restaurantes\n• automatizar atendimento com chatbot 24h\n• usar ChatGPT para criar legendas, cardápios e respostas rápidas\n• dominar o Google Meu Negócio e aparecer no mapa\n\nIdeal para donos de restaurantes, bares, botecos, lanchonetes, pizzarias, hamburguerias, comida japonesa, delivery e qualquer negócio de alimentação em Salvador, Feira de Santana, Camaçari ou toda Bahia."},
+  {nicho:"Oficina Automotiva", livro:"Manual do Marketing Para Oficina Automotiva", url:"https://www.amazon.com.br/Manual-Marketing-Para-Oficinas-Automotivas-ebook/dp/B0CJXPNMRD", sobre:"**Sobre o Manual do Marketing Para Oficina Automotiva**\n\nO guia definitivo para mecânicos e donos de oficinas que querem lotar a agenda com clientes do Google, Instagram e WhatsApp. Aprenda a aparecer nas buscas por “oficina mecânica perto de mim”, “troca de óleo em Salvador”, “alinhamento e balanceamento em Feira de Santana”, criar link direto para orçamento, usar tráfego pago com R$ 15 por dia, catálogo de serviços no WhatsApp, chatbot para agendamento 24h e muito mais. Perfeito para oficinas em toda Bahia."},
+  {nicho:"Imobiliária", livro:"Manual do Marketing Para Imobiliárias", url:"https://www.amazon.com.br/Manual-Marketing-Para-Imobili%C3%A1rias-Apartamentos-ebook/dp/B0CLND1P5J", sobre:"**Sobre o Manual do Marketing Para Imobiliárias**\n\nEstratégias comprovadas para corretores e imobiliárias venderem mais apartamentos, casas e terrenos. Apareça no Google para “apartamento 2 quartos em Salvador”, “casa à venda em Camaçari”, configure anúncios no Instagram, crie tours virtuais, use WhatsApp para fechar vendas, chatbot para qualificar leads e domine o Google Meu Negócio. Ideal para imobiliárias e corretores na Bahia."},
+  {nicho:"Academia", livro:"Manual do Marketing Para Academias", url:"https://www.amazon.com.br/Manual-Marketing-Para-Academias-Divulgar-ebook/dp/B0CLL4ZPXQ", sobre:"**Sobre o Manual do Marketing Para Academias**\n\nComo lotar sua academia com alunos novos todos os meses. Aprenda a aparecer para “academia perto de mim”, “musculação em Lauro de Freitas”, criar desafios no Instagram, tráfego pago para matrículas, link WhatsApp para aula experimental, chatbot para agendamento e estratégias de fidelização. Perfeito para academias de musculação, crossfit, pilates e dança."},
+  {nicho:"Petshop", livro:"Manual do Marketing Para Petshop", url:"https://www.amazon.com.br/Manual-Marketing-Para-Petshop-Veterin%C3%A1rios-ebook/dp/B0CLN9SGSK", sobre:"**Sobre o Manual do Marketing Para Petshop e Veterinários**\n\nAtraia mais tutores de pets com estratégias simples. Apareça para “banho e tosa em Salvador”, “veterinário 24h”, “petshop delivery de ração”. Crie catálogo no WhatsApp, anúncios no Instagram, link para agendamento e use ChatGPT para dicas de cuidados. Ideal para petshops, clínicas veterinárias e banho/tosa."},
+  {nicho:"Barbeiro", livro:"Manual do Marketing Para Barbeiros", url:"https://www.amazon.com.br/Manual-Marketing-Para-Barbeiros-Barbearia-ebook/dp/B0CLNFTQZW", sobre:"**Sobre o Manual do Marketing Para Barbeiros**\n\nLotar a agenda de cortes todos os dias. Apareça para “barbeiro em Salvador”, “corte degradê”, “barbearia perto de mim”. Crie link WhatsApp para agendamento, posts virais no Instagram, tráfego pago barato e use chatbot para confirmar horários. Perfeito para barbeiros e barbearias."},
+  {nicho:"Salão de Beleza", livro:"Manual do Marketing Para Salão de Beleza", url:"https://www.amazon.com.br/Manual-Marketing-Para-Sal%C3%A3o-Beleza-ebook/dp/B0CLVLZ7SW", sobre:"**Sobre o Manual do Marketing Para Salão de Beleza**\n\nComo atrair mais clientes para cortes, coloração, progressiva, unhas e sobrancelhas. Apareça no Google e Instagram, use link WhatsApp para agendamento, catálogo de serviços e tráfego pago para lotar a agenda. Ideal para salões de beleza, manicures e cabeleireiros."},
+  {nicho:"Clínica de Estética", livro:"Manual do Marketing Para Clínica de Estética", url:"https://www.amazon.com.br/Manual-Marketing-Para-Cl%C3%ADnica-Est%C3%A9tica-ebook/dp/B0CM1C28WT", sobre:"**Sobre o Manual do Marketing Para Clínica de Estética**\n\nEstratégias para atrair clientes de botox, preenchimento, harmonização, limpeza de pele e emagrecimento. Apareça para “estética facial em Salvador”, use WhatsApp para consultas, anúncios no Instagram e chatbot para agendamento. Perfeito para clínicas de estética e biomédicas."},
+  {nicho:"Pizzaria", livro:"Manual do Marketing Para Pizzarias", url:"https://www.amazon.com.br/Manual-Marketing-Para-Pizzarias-Divulgar-ebook/dp/B0CLYPVKYD", sobre:"**Sobre o Manual do Marketing Para Pizzarias**\n\nAumente suas vendas de delivery e salão. Apareça para “pizza delivery em Salvador”, “melhor pizza em Feira de Santana”, use catálogo WhatsApp, tráfego pago no iFood e Instagram, link para pedidos e promoções semanais. Ideal para pizzarias tradicionais e delivery."},
+  {nicho:"Ótica", livro:"Manual do Marketing Para Óticas", url:"https://www.amazon.com.br/Manual-Marketing-Para-%C3%93ticas-Internet-ebook/dp/B0CLYM444S", sobre:"**Sobre o Manual do Marketing Para Óticas**\n\nVenda mais óculos de grau, solares e lentes de contato. Apareça para “óticas em Salvador”, “óculos de grau barato”, use Instagram para mostrar armações, link WhatsApp para orçamento e tráfego pago para consultas. Perfeito para óticas e oftalmologistas."},
+  {nicho:"Instituição de Ensino", livro:"Manual do Marketing Para Escolas e Faculdades", url:"https://www.amazon.com.br/Manual-Marketing-Para-Escolas-Faculdades-ebook/dp/B0CLL4FXFJ", sobre:"**Sobre o Manual do Marketing Para Escolas e Faculdades**\n\nAtraia mais matrículas com estratégias digitais. Apareça para “escola particular em Salvador”, “curso técnico em Camaçari”, use tours virtuais, WhatsApp para inscrições e anúncios no Google. Ideal para escolas, colégios e faculdades."},
+  {nicho:"Técnico", livro:"Manual do Marketing Para Técnicos", url:"https://www.amazon.com.br/Manual-Marketing-Para-T%C3%A9cnicos-Eletricista-ebook/dp/B0CLL4SND8", sobre:"**Sobre o Manual do Marketing Para Técnicos (Eletricista, Encanador, etc)**\n\nLotar a agenda de serviços residenciais. Apareça para “eletricista 24h em Salvador”, “encanador urgente”, use link WhatsApp para orçamento imediato, anúncios no Google e Instagram. Perfeito para técnicos autônomos."},
+  {nicho:"Loja de Roupas", livro:"Manual do Marketing Para Loja de Roupas", url:"https://www.amazon.com.br/Manual-Marketing-Para-Loja-Roupas-ebook/dp/B0CLRWQ9GJ", sobre:"**Sobre o Manual do Marketing Para Loja de Roupas**\n\nVenda mais roupas femininas, masculinas e infantis. Apareça para “loja de roupas em Salvador”, “moda evangélica”, use Instagram Shopping, catálogo WhatsApp e tráfego pago. Ideal para boutiques e lojas de varejo."},
+  {nicho:"Hotel", livro:"Manual do Marketing Para Hotéis", url:"https://www.amazon.com.br/Manual-Marketing-Para-Hot%C3%A9is-Hospedes-ebook/dp/B0CLS1X2KM", sobre:"**Sobre o Manual do Marketing Para Hotéis**\n\nAumente as reservas diretas e reduza comissões. Apareça para “hotel em Salvador”, “pousada na praia”, use Google Hotel Ads, WhatsApp para reservas e tours virtuais. Perfeito para hotéis e pousadas."},
+  {nicho:"Dentista", livro:"Manual do Marketing Odontológico", url:"https://www.amazon.com.br/Manual-Marketing-Odontol%C3%B3gico-Divulga%C3%A7%C3%A3o-Cl%C3%ADnica-ebook/dp/B0CLS1KT4T", sobre:"**Sobre o Manual do Marketing Odontológico**\n\nAtraia mais pacientes para implantes, clareamento, ortodontia. Apareça para “dentista em Salvador”, “implante dentário preço”, use WhatsApp para consultas e anúncios no Instagram. Ideal para dentistas e clínicas odontológicas."},
+  {nicho:"Nutricionista", livro:"Manual do Marketing Para Nutricionistas", url:"https://www.amazon.com.br/Manual-Marketing-Para-Nutricionistas-Conquistar-ebook/dp/B0CLVJXB1M", sobre:"**Sobre o Manual do Marketing Para Nutricionistas**\n\nLotar a agenda de consultas. Apareça para “nutricionista em Salvador”, “dieta para emagrecer”, use Instagram para dicas, link WhatsApp para agendamento e ChatGPT para planos alimentares. Perfeito para nutricionistas clínicas e esportivas."},
+  {nicho:"Panificadora", livro:"Manual do Marketing Para Panificadoras", url:"https://www.amazon.com.br/Manual-Marketing-Para-Panificadoras-Divulgar-ebook/dp/B0CLVQ45WT", sobre:"**Sobre o Manual do Marketing Para Panificadoras**\n\nVenda mais pães, bolos e salgados. Apareça para “padaria 24h em Salvador”, “delivery de pão”, use catálogo WhatsApp e promoções matinais. Ideal para padarias e confeitarias."},
+  {nicho:"Auto Escola", livro:"Manual do Marketing Para Auto Escolas", url:"https://www.amazon.com.br/Manual-Marketing-Para-Auto-Escolas-ebook/dp/B0CLYPMY5V", sobre:"**Sobre o Manual do Marketing Para Auto Escolas**\n\nAtraia mais alunos para primeira habilitação e renovação. Apareça para “auto escola em Salvador”, “aula de direção”, use WhatsApp para matrícula e anúncios no Google. Perfeito para CFC e instrutores."},
+  {nicho:"Loja de Calçados", livro:"Manual do Marketing Para Loja de Calçados", url:"https://www.amazon.com.br/Manual-Marketing-Para-Loja-Cal%C3%A7ados-ebook/dp/B0CM19W8JK", sobre:"**Sobre o Manual do Marketing Para Loja de Calçados**\n\nVenda mais tênis, sandálias e sapatos sociais. Apareça para “loja de calçados em Salvador”, “tênis barato”, use Instagram Shopping e catálogo WhatsApp. Ideal para lojas de calçados."}
+];
+
+// ==================== RESTANTE DO CÓDIGO (igual, só com o novo bloco) ====================
+const TOOLS = [ /* mesmo de antes, não mudei */ 
+  {name:"Tráfego Pago", variations:["Tráfego Pago para [NICHO]: Passo a Passo 2025","Como Fazer Anúncios no Google e Instagram para [NICHO]","Guia Completo de Tráfego Pago para [NICHO]"]},
+  {name:"Link WhatsApp", variations:["Como Criar Link do WhatsApp para [NICHO] em 2 Minutos","Link Direto do WhatsApp para [NICHO]","Crie seu Link do WhatsApp para [NICHO] Hoje"]},
+  {name:"Catálogo do WhatsApp", variations:["Catálogo do WhatsApp para [NICHO]: Tutorial Completo","Como Usar o Catálogo do WhatsApp no [NICHO]","Monte seu Catálogo do WhatsApp para [NICHO]"]},
+  {name:"Chatbot", variations:["Chatbot 24h para [NICHO]","Como Configurar Chatbot no WhatsApp para [NICHO]","Atendimento Automatizado para [NICHO]"]},
+  {name:"Google Meu Negócio", variations:["Como Aparecer no Google Maps para [NICHO] 2025","Google Meu Negócio para [NICHO]: Passo a Passo","Domine o Google Maps como [NICHO]"]},
+  {name:"Cronograma de Postagens", variations:["Cronograma Perfeito para [NICHO]","Quantas Vezes Postar por Semana no [NICHO]","O Melhor Horário para Postar no [NICHO]"]},
+  {name:"ChatGPT", variations:["10 Comandos de ChatGPT para [NICHO]","Como Usar IA no [NICHO]","ChatGPT para [NICHO]: Aumente suas Vendas"]},
+  {name:"Cartão Virtual", variations:["Cartão Virtual para [NICHO]","Como Criar Cartão Digital para [NICHO]","Cartão de Visita Virtual para [NICHO]"]},
+  {name:"Site Simples", variations:["Como Criar Site para [NICHO] sem Programar","Landing Page para [NICHO] em 30 Minutos","Site Profissional para [NICHO]"]}
+];
+
+function getNextDate() {
+  const last = localStorage.getItem("manual_last_date");
+  let next = new Date();
+  if (last) next = new Date(last);
+  next.setDate(next.getDate() + 1);
+  next.setHours(9,0,0,0);
+  localStorage.setItem("manual_last_date", next.toISOString());
+  return next.toISOString().slice(0,10);
+}
+function resetDate() {
+  localStorage.removeItem("manual_last_date");
+  alert("Contador resetado!");
+  document.getElementById("nextDate").textContent = getNextDate() + " às 09:00";
+}
+document.getElementById("nextDate").textContent = getNextDate() + " às 09:00";
+
+function generatePost() {
+  const book = BOOKS[Math.floor(Math.random()*BOOKS.length)];
+  const tool = TOOLS[Math.floor(Math.random()*TOOLS.length)];
+  const title = tool.variations[Math.floor(Math.random()*3)].replace(/\[NICHO\]/g, book.nicho);
+  const date = getNextDate();
+  const slug = title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+
+  const md = `---
+layout: post
+title: "${title}"
+date: ${date} 09:00:00 -0300
+categories: marketing
+tags: [${book.nicho.toLowerCase()}, marketing digital, ebook]
+---
+
+# ${title}
+
+Você sabia que **${tool.name}** é uma das estratégias que mais traz clientes rápidos para **${book.nicho.toLowerCase()}**?
+
+Neste mini-guia você vai aprender o passo a passo completo para colocar em prática hoje mesmo.
+
+## Passo a passo simples
+
+1. Configuração em menos de 5 minutos  
+2. Dicas que dobram os resultados  
+3. Erros comuns (e como evitar)  
+4. Modelos prontos para copiar
+
+> Este é apenas **um dos capítulos** do livro **${book.livro}**.
+
+<p style="text-align:center;margin:50px 0;">
+<a href="${book.url}" target="_blank" style="background:#ff9900;color:#111;padding:20px 50px;border-radius:12px;text-decoration:none;font-size:20px;font-weight:bold;">
+  Acessar o Manual Completo na Amazon
+</a>
+</p>
+
+${book.sobre}
+
+<p style="text-align:center;margin:50px 0;">
+<a href="${book.url}" target="_blank" style="background:#ff9900;color:#111;padding:20px 50px;border-radius:12px;text-decoration:none;font-size:20px;font-weight:bold;">
+  Sim, quero o manual completo agora!
+</a>
+</p>
+
+${book.descCompleta ? "\n\n---\n\n" + book.descCompleta : ""}
+
+#marketingdigital #${book.nicho.replace(/\s/g,"").toLowerCase()} #TráfegoPago`;
+
+  return {md, filename: `${date}-${slug}.md`};
+}
+
+// BOTÕES (igual antes)
+document.getElementById("generateOne").onclick = () => {
+  const post = generatePost();
+  const blob = new Blob([post.md], {type:"text/markdown"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = post.filename; a.click();
+  document.getElementById("preview").textContent = post.md;
+};
+document.getElementById("previewBtn").onclick = () => document.getElementById("preview").textContent = generatePost().md;
+document.getElementById("generateAll").onclick = async () => {
+  const s = document.createElement("script");
+  s.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+  document.body.appendChild(s);
+  await new Promise(r => s.onload = r);
+  const zip = new JSZip();
+  localStorage.removeItem("manual_last_date");
+  for(let i = 0; i < 365; i++) {
+    const p = generatePost();
+    zip.file(p.filename, p.md);
+  }
+  zip.generateAsync({type:"blob"}).then(blob => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "_posts/365-posts-manuais-amazon-seo.zip";
+    a.click();
+  });
+};
+document.getElementById("resetDate").onclick = resetDate;
+document.getElementById("preview").textContent = generatePost().md;
+</script>
+</body>
+</html>
