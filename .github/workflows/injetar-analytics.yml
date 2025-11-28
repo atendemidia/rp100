@@ -1,0 +1,42 @@
+name: Injetar Google Analytics (GA4)
+
+on:
+  workflow_dispatch:          # permite rodar manualmente
+  push:
+    branches: [ main, master ]
+
+jobs:
+  inject-ga4:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Injetar código GA4 em todos os arquivos .html
+        run: |
+          CODE='\
+          <!-- Google tag (gtag.js) -->\
+          <script async src="https://www.googletagmanager.com/gtag/js?id=G-RH8XE6J76H"></script>\
+          <script>\
+            window.dataLayer = window.dataLayer || [];\
+            function gtag(){dataLayer.push(arguments);}\
+            gtag('"'"'js'"'"', new Date());\
+            gtag('"'"'config'"'"', '"'"'G-RH8XE6J76H'"'"');\
+          <\/script>'
+
+          find . -name "*.html" -type f ! -path "*/.git/*" ! -path "*/node_modules/*" | while read file; do
+            if ! grep -q "G-RH8XE6J76H" "$file"; then
+              echo "Injetando GA4 em $file"
+              sed -i '/<\/head>/i\'"$CODE" "$file"
+            else
+              echo "Já tem GA4 → $file"
+            fi
+          done
+
+      - name: Commit e push automático (se mudou algo)
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          git diff --quiet && echo "Nenhuma mudança" && exit 0
+          git commit -m "chore: adicionar Google Analytics GA4 em todas as páginas"
+          git push
